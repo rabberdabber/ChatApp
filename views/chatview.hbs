@@ -1,6 +1,25 @@
-{{#if chat}}<p>{{ chat.user }}</p>{{/if}}
-{{#if chat}}<h2>{{ chat.message }}</h2>{{/if}}
-{{#if chat }}
-    <hr/>
-    <p><a href="/chats/destroy?user={{chat.user}}">Unsend</a></p>
-{{/if}}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12">
+            {{#if chat}}<p>{{ chat.user }}</p>{{/if}}
+            {{#if chat}}<h2>{{ chat.message }}</h2>{{/if}}
+        </div>
+    </div>
+    {{#if chat }}
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="btn-group">
+                <a class="btn btn-outline-dark" href="/chats/destroy?user={{chat.user}}" role="button">
+                    Unsend
+                </a>
+                <!--
+                <a class="btn btn-outline-dark" href="/chats/edit?key={{notekey}}" role="button">
+                    Edit
+                </a>
+                -->
+            </div>
+        </div>
+    </div>
+    {{/if}}
+</div>

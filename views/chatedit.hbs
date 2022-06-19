@@ -1,11 +1,30 @@
-<form method='POST' action='/chats/save'> 
-<input type='hidden' name='docreate' value='<%= 
-                  docreate ? "create" : "update"%>'> 
+<form method='POST' action='/chats/save'>
+    <div class="container-fluid">
+        {{#if docreate}}
+        <input type='hidden' name='docreate' value="create">
+        {{else}}
+        <input type='hidden' name='docreate' value="update">
+        {{/if}}
+        <div class="form-group row align-items-center">
+            <label for="user" class="col-1 col-form-label">UserName</label>
+            {{#if docreate }}
+            <div class="col">
+                <input type='text' class="form-control" placeholder="username" name='user' value='{{chat.user}}' />
+            </div>
+            {{else}}
+            {{#if chat }}
+            <span class="input-group-text">{{chat.user}}</span>
+            {{/if}}
+            <input type='hidden' name='user' value='{{chat.user}}' />
+            {{/if}}
+        </div>
 
-<p>User: <input type='text' name='user' 
-        value='{{#if chat }}{{chat.user}}{{/if}} ' /></p> 
-<br/><textarea rows=5 cols=40 name='message' >
-    {{#if chat }}{{chat.message}}{{/if}} 
-    </textarea> 
-<br/><input type='submit' value='Submit' /> 
+
+        <div class="form-group row">
+            <textarea class="form-control" name='message' rows="5">{{chat.message}}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-default">Submit</button>
+
+    </div>
 </form>

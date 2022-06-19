@@ -1,6 +1,14 @@
 <form method='POST' action='/chats/destroy/confirm'>
-    <input type='hidden' name='user' value='{{chat.user}}'>
-    <p>Unsend {{chat.user}}?</p>
-    <br /><input type='submit' value='DELETE' />
-    <a href="/chats/view?user={{chat.user}}">Cancel</a>
+    <div class="container-fluid">
+        <input type='hidden' name='user' value='{{user}}'>
+        <p class="form-text">Unsend {{user}}?</p>
+
+        <div class="btn-group">
+            <button type="submit" value='DELETE' class="btn btn-outline-dark">Unsend</button>
+            <a class="btn btn-outline-dark" href="/chats/view?user={{user}}" role="button">
+                Cancel
+            </a>
+        </div>
+
+    </div>
 </form>
