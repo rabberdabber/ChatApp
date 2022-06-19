@@ -1,0 +1,11 @@
+<form method='POST' action='/chats/save'> 
+<input type='hidden' name='docreate' value='<%= 
+                  docreate ? "create" : "update"%>'> 
+
+<p>User: <input type='text' name='user' 
+        value='{{#if chat }}{{chat.user}}{{/if}} ' /></p> 
+<br/><textarea rows=5 cols=40 name='message' >
+    {{#if chat }}{{chat.message}}{{/if}} 
+    </textarea> 
+<br/><input type='submit' value='Submit' /> 
+</form>

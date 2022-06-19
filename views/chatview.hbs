@@ -1,0 +1,6 @@
+{{#if chat}}<p>{{ chat.user }}</p>{{/if}}
+{{#if chat}}<h2>{{ chat.message }}</h2>{{/if}}
+{{#if chat }}
+    <hr/>
+    <p><a href="/chats/destroy?user={{chat.user}}">Unsend</a></p>
+{{/if}}
