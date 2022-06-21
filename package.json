@@ -8,16 +8,19 @@
         "server2": "DEBUG=chats:* PORT=3002 node ./bin/www"
     },
     "dependencies": {
+        "@fortawesome/fontawesome-free": "^6.1.1",
         "body-parser": "~1.18.2",
         "bootstrap": "^4.6.1",
+        "bootstrap-fileinput": "^5.2.8",
         "cookie-parser": "~1.4.3",
         "debug": "~2.6.9",
         "express": "^4.18.1",
+        "feather-icons": ">=4.5.x",
+        "font-awesome": "^4.7.0",
         "hbs": "~4.0.1",
         "jquery": "^1.9.1",
         "morgan": "~1.9.0",
-        "popper.js": "^1.14.7",
-        "serve-favicon": "^2.4.5",
-        "feather-icons": ">=4.5.x"
+        "popper.js": "^1.16.1",
+        "serve-favicon": "^2.5.0"
     }
 }

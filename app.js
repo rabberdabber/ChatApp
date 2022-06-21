@@ -24,12 +24,21 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/assets/vendor/bootstrap', express.static(
     path.join(__dirname, 'node_modules', 'bootstrap', 'dist')));
+app.use('/assets/vendor/font-awesome', express.static(
+    path.join(__dirname, 'node_modules', 'font-awesome')));
 app.use('/assets/vendor/jquery', express.static(
     path.join(__dirname, 'node_modules', 'jquery')));
 app.use('/assets/vendor/popper.js', express.static(
     path.join(__dirname, 'node_modules', 'popper.js', 'dist')));
 app.use('/assets/vendor/feather-icons', express.static(
     path.join(__dirname, 'node_modules', 'feather-icons', 'dist')));
+app.use('/assets/vendor/font-awesome', express.static(
+    path.join(__dirname, 'node_modules', 'font-awesome', 'dist')));
+app.use('/assets/vendor/fontawesome', express.static(
+    path.join(__dirname, 'node_modules', '@fortawesome', 'fontawesome-free')));
+app.use('/assets/vendor/fileinput', express.static(
+    path.join(__dirname, 'node_modules', 'bootstrap-fileinput')));
+
 
 app.use('/', index);
 // app.use('/users', users); 
