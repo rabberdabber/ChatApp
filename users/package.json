@@ -1,0 +1,23 @@
+{
+  "name": "user-auth-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "user-server.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "DEBUG=users:* PORT=3333 SEQUELIZE_CONNECT=sequelize-sqlite.yaml node --experimental-modules user-server"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "debug": "^4.3.4",
+    "fs-extra": "^10.1.0",
+    "js-yaml": "^4.1.0",
+    "restify": "^8.6.1",
+    "restify-clients": "^3.1.0",
+    "sequelize": "^6.21.0",
+    "sqlite3": "^5.0.8",
+    "superagent": "^7.1.6",
+    "yaml": "^2.1.1"
+  }
+}
