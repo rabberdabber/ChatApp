@@ -1,7 +1,7 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-12 btn-group-vertical" role="group">
+        <div id="chatMessages" class="col-12 btn-group-vertical" role="group">
             {{#each chatlist}}
             <a class="btn btn-lg btn-block btn-outline-dark" href="/chats/view?user={{ this.user }}">
                 {{ this.user }}
@@ -10,3 +10,21 @@
         </div>
     </div>
 </div>
+
+{{> footerjs}}
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    $(document).ready(function () {
+        var socket = io('/home');
+        socket.on('chatMessages', function (data) {
+            var chatlist = data.chatlist;
+            $('#chatMessages').empty();
+            for (var i = 0; i < chatlist.length; i++) {
+                chatdata = chatlist[i];
+                $('#chatMessages')
+                    .append('<a class="btn btn-lg btn-block btn-outline-dark" href = "/chats/view?user=' +  chatdata.user + '">' + chatdata.user + '</a>');
+            }
+        });
+    }); 
+</script>

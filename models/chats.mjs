@@ -1,3 +1,5 @@
+import _events from './chats-events';
+export const events = _events;
 var ChatsModule;
 
 async function model() {
@@ -10,10 +12,18 @@ async function model() {
     return ChatsModule;
 }
 
-export async function create(user,message) { return (await model()).create(user,message); }
-export async function update(user,message) { return (await model()).update(user,message); }
+export async function create(user) { 
+    const chat = (await model()).create(user);
+    _events.chatCreated(chat);
+    return chat; 
+}
+
 export async function read(user) { return (await model()).read(user); }
-export async function destroy(user) { return (await model()).destroy(user); }
+export async function destroy(user) { 
+    (await model()).destroy(user);
+    _events.chatDestroy({user});
+    return user;
+}
 export async function keylist() { return (await model()).keylist(); }
 export async function count() { return (await model()).count(); }
 export async function close() { return (await model()).close(); }

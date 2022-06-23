@@ -25,44 +25,148 @@
 <div class="chat-container">
     <header class="chat-header">
         <h1><i class="fa-light fa-face-smile"></i> ChatCord</h1>
-
     </header>
+    
     <main class="chat-main">
         <div class="chat-sidebar">
+            <!--
             <h3><i class="fas fa-users"></i> Users</h3>
             <ul id="users">
                 <li> Baba</li>
             </ul>
+            -->
         </div>
 
-        <div class="chat-messages">
-            <div class="message card" style="background-color:#DCDCDC ;">
-                <p class="meta">Brad <span>9:12pm</span></p>
-                <p class="text">
-                    {{chat.message}}
-                </p>
-            </div>
-            <div class="message text-right card" style="background-color:#1E90FF;">
-                <p class="meta">Mary <span style="color:black;">9:15pm</span></p>
-                <p class="text">
-                    {{chat.message}}
-                </p>
-            </div>
-            
+        <div id="chatMessages" class="chat-messages">
+           
         </div>
 
     </main>
 
     <div class="chat-form-container">
-        <form id="chat-form">
-            <input id="msg" type="text" placeholder="Enter Message" required autocomplete="off" />
+        <form id="submit-message" action="/chats/write-message" method="POST">
+            <input id="msg" type="text" name="message" placeholder="Enter Message" required autocomplete="off" />
+            <input type="hidden" name="from" value="{{username.username}}">
+            <input type="hidden" name="to" value="{{chat.user}}">
+
             <button class="btn"><i class="fas fa-paper-plane"></i> Send</button>
         </form>
     </div>
 </div>
+
 <!--
 <div class="file-loading">
     <input id="input-ficons-1" name="input-ficons-1[]" multiple type="file">
 </div>
 -->
+
 <script src="/assets/javascripts/script.js"> </script>
+
+{{> footerjs }}
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    $(document).ready(function () {
+        io('/view').on('chatdestroy', function (data) {
+            if (data.user === "{{ chat.user }}") {
+                window.location.href = "/";
+            }
+        });
+    });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        console.log('EMIT getchatmessages');
+
+        io('/view').emit('getchatmessages', '{{chat.user}}', function (msgs) {
+            console.log("RECEIVE getchatmessages reply " + JSON.stringify(msgs));
+
+            $('#chatMessages').empty();
+            if (msgs.length > 0) {
+                msgs.forEach(function (newmsg) {
+                    $('#chatMessages').prepend(formatMessage(newmsg));
+                });
+                $('#chatMessages').show();
+                connectMsgDelButton();
+            } else $('#chatMessages').hide();
+        });
+
+        var connectMsgDelButton = function () {
+           /*
+            $('.message-del-button').on('click', function (event) {
+                $.post('/chats/del-message', {
+                    id: $(this).data("id"),
+                    namespace: $(this).data("namespace")
+                },
+                    function (response) { });
+                event.preventDefault();
+            });
+            */
+        };
+
+        var formatMessage = function (newmsg) {
+            var color = '#1E90FF';
+
+            if(newmsg.to == '{{chat.user}}') {
+                color = '#DCDCDC';
+            }
+            const time = new Date(newmsg.timestamp).toLocaleTimeString();
+            if (newmsg.from == '{{username.username}}'){
+                return '<div id="chat-message-' + newmsg.id + '" style="background-color:' + color + ';" class="message text-left card">'
+                    + '<p class="meta">' + newmsg.from + " " + '<span>' + time + '</span>' + '</p>'
+                    + '<p class="text">' + newmsg.message + '</p>'
+                    + '</div>';
+            }
+
+            return '<div id="chat-message-' + newmsg.id + '" style="background-color:' + color + ';" class="message text-right card">'
+                + '<p class="meta">' + newmsg.from + " " + '<span>' + time + '</span>' +'</p>'
+                + '<p class="text">' + newmsg.message + '</p>' 
+                + '</div>';
+        };
+
+        io('/view').on('newmessage', function (newmsg) {
+            console.log('/view-{{chat.user}} received newmessage ' + JSON.stringify(newmsg));
+            console.log('{{username.username}}');
+            if (newmsg.to === '{{username.username}}' || newmsg.from === '{{username.username}}') {
+                $('#chatMessages').append(formatMessage(newmsg));
+                $('#chatMessages').show();
+                connectMsgDelButton();
+            }
+        });
+
+        io('/view').on('destroymessage', function (data) {
+            console.log('/view-{{chat.user}} received destroymessage ' + JSON.stringify(data));
+            if (data.to === '/view-{{chat.user}}') {
+                $('#chatMessages #chat-message-' + data.id).remove();
+            }
+        });
+
+        $('form#submit-message').submit(function (event) {
+
+            // Abort any pending request
+            if (request) {
+                request.abort();
+            }
+
+            var $form = $('form#submit-message');
+          
+            var request = $.ajax({
+                type: $form.attr('method'),
+                url: $form.attr('action'),
+                data: $form.serialize()
+            });
+
+            request.done(function (response, textStatus, jqXHR) { });
+
+            request.fail(function (jqXHR, textStatus, errorThrown) {
+                alert("ERROR " + jqXHR.responseText);
+            });
+
+            event.preventDefault();
+        });
+
+    }); 
+</script>
+

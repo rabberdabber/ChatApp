@@ -12,7 +12,7 @@ const error = DBG('chats:error-mongodb');
 var client;
 
 async function connectDB() {
-    if (!client) client = await MongoClient.connect(process.env.MONGO_URL).catch((error) => {
+    if (!client) client = await MongoClient.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true }).catch((error) => {
         console.log("couldn't connect to mongodb");
         process.exit(2);
     });
@@ -22,30 +22,22 @@ async function connectDB() {
     };
 }
 
-export async function create(user,message) {
+export async function create(user) {
     const { db, client } = await connectDB();
-    const note = new Chat(user,message);
+    const note = new Chat(user);
     const collection = db.collection('chats');
     await collection.insertOne({
-        user: user, message:message
+        user: user
     });
     return note;
 }
 
-export async function update(user,message) {
-    const { db, client } = await connectDB();
-    const chat = new Chat(user,message);
-    const collection = db.collection('chats');
-    await collection.updateOne({ user:user },
-        { $set: { message:message } });
-    return note;
-}
 
 export async function read(user) {
     const { db, client } = await connectDB();
     const collection = db.collection('chats');
     const doc = await collection.findOne({ user:user });
-    const chat = new Chat(doc.user, doc.message);
+    const chat = new Chat(doc.user);
     return chat;
 }
 
