@@ -34,6 +34,8 @@ build/Release
 
 # Dependency directories
 node_modules/
+users/node_modules
+users/sequelize-sqlite.yaml
 jspm_packages/
 data/
 

@@ -1,6 +1,0 @@
-dbname: users 
-username: 'bake'
-password: 'b911ereket'
-params: 
-    dialect: sqlite 
-    storage: users-sequelize.sqlite3 
