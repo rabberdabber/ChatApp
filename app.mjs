@@ -89,6 +89,7 @@ initPassport(app);
 
 
 app.use('/', index);
+app.use('/main',index);
 app.use('/users', users); 
 app.use('/chats', chats);
 

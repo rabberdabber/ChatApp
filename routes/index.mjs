@@ -1,6 +1,7 @@
 import express from 'express';
 import * as chats from '../models/chats'
 import util from 'util';
+import { ensureAuthenticated } from './users';
 
 export const router = express.Router();
 
@@ -18,13 +19,19 @@ async function getList() {
     return Promise.all(keyPromises);
 };
 
-router.get('/', async (req, res, next) => {
+router.get('/main',ensureAuthenticated, async(req, res, next) => {
     try {
         let chatlist = await getList();
         res.render('index', {
             chatlist: chatlist,
             user: req.user ? req.user : undefined
         });
+    } catch (e) { next(e); }
+});
+
+router.get('/', async (req, res, next) => {
+    try {
+        res.render('login');
     } catch (e) { next(e); }
 });
 

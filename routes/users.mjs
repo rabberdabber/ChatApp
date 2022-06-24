@@ -34,7 +34,7 @@ export function ensureAuthenticated(req, res, next) {
 router.get('/login', function (req, res, next) {
     try {
         res.render('login', {
-            title: "Login to Notes",
+            title: "Login to Chats",
             user: req.user,
         });
     } catch (e) {
@@ -45,20 +45,20 @@ router.get('/login', function (req, res, next) {
 
 router.post('/login',
     passport.authenticate('local', {
-        successRedirect: '/',     // SUCCESS: Go to home page 
+        successRedirect: '/main',     // SUCCESS: Go to home page 
         failureRedirect: 'login', // FAIL: Go to /user/login 
     })
 );
 
 router.get('/logout', function (req, res, next) {
     try {
-        debug(`/logout`);
-        req.session.destroy();
-        req.logout(function(err) {
-            if (err) { return next(err); } 
+        if(req.session){
+            debug(`/logout`);
+            req.session.destroy();
             res.clearCookie(sessionCookieName);
             res.redirect('/');
-        });
+        }
+
     } catch (e) {
         error(`/logout ERROR ${e.stack}`);
         next(e);
