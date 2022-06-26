@@ -12,6 +12,7 @@ import { sessionCookieName } from '../app';
 export const router = express.Router();
 
 import DBG from 'debug';
+import flash from 'express-flash';
 const debug = DBG('notes:router-users');
 const error = DBG('notes:error-users');
 
@@ -31,15 +32,49 @@ export function ensureAuthenticated(req, res, next) {
     }
 }
 
+
+router.get('/signup', async (req, res, next) => {
+    try {
+        res.render('signup',{ message: req.flash('message')});
+    } catch (e) { next(e); }
+});
+
+
+router.post('/signup', async(req, res, next) => {
+    try{
+        var user = await usersModel.find(req.body.username);
+        if(user != null){
+            req.flash('message',"User with the same username already exists!");
+            res.redirect('/');
+            return;
+        }
+
+        if(req.body.password1 != req.body.password2){
+           req.flash('message',"passwords does not match, registration failed!");
+           res.redirect('/users/signup');
+           return;
+        }
+        var user = await usersModel.findOrCreate({
+            id: req.body.username, password: req.body.password1, provider: "local",
+            familyName: req.body.username , givenName: req.body.username, middleName: "",
+            emails: [req.body.email], photos: []
+        });
+        var lst = usersModel.listUsers();
+        console.log(lst);
+        res.redirect('/users/login');
+    } catch(e) { next(e); }
+})
+
 router.get('/login', function (req, res, next) {
     try {
         res.render('login', {
             title: "Login to Chats",
-            user: req.user,
-        });
+            user: req.user, message: req.flash('message')}
+        );
     } catch (e) {
-        error(`/login ERROR ${e.stack}`);
-        next(e);
+        req.flash('message','Username or Password does not match!')
+        res.redirect('/');
+        return;
     }
 });
 
@@ -47,6 +82,8 @@ router.post('/login',
     passport.authenticate('local', {
         successRedirect: '/main',     // SUCCESS: Go to home page 
         failureRedirect: 'login', // FAIL: Go to /user/login 
+        failureFlash: true,
+        failureFlash: 'Username does not match the given Password!'
     })
 );
 
@@ -70,6 +107,11 @@ passport.use(new LocalStrategy(
         try {
             debug(`userPasswordCheck(${username}, ${password})`);
             var check = await usersModel.userPasswordCheck(username, password);
+            if(check == null){
+                
+                done(null,false);
+                return;
+            }
             if (check.check) {
                 debug(`userPasswordCheck shows good user ${util.inspect(check)}`);
                 done(null, {

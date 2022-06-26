@@ -16,18 +16,19 @@ async function connectDB() {
         console.log("couldn't connect to mongodb");
         process.exit(2);
     });
+    
     return {
         db: client.db(process.env.MONGO_DBNAME),
         client: client
     };
 }
 
-export async function create(user) {
+export async function create(owner, user) {
     const { db, client } = await connectDB();
-    const note = new Chat(user);
+    const note = new Chat(owner, user);
     const collection = db.collection('chats');
     await collection.insertOne({
-        user: user
+        user: user, owner: owner
     });
     return note;
 }
@@ -36,7 +37,7 @@ export async function create(user) {
 export async function read(user) {
     const { db, client } = await connectDB();
     const collection = db.collection('chats');
-    const doc = await collection.findOne({ user:user });
+    const doc = await collection.findOne({ user:user, owner:owner });
     const chat = new Chat(doc.user);
     return chat;
 }

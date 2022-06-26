@@ -28,8 +28,7 @@ export async function create(username, password,
             .auth('them', 'D4ED43C0-8BD6-4FE2-B358-7C0E230D11EF');
         return res.body;
     } catch (e) {
-        error(`users CREATE ERROR ${e.stack}`);
-        throw e;
+       return null;
     }
 }
 
@@ -49,8 +48,7 @@ export async function update(username, password,
             .auth('them', 'D4ED43C0-8BD6-4FE2-B358-7C0E230D11EF');
         return res.body;
     } catch (e) {
-        error(`users UPDATE ERROR ${e.stack}`);
-        throw e;
+        return null;
     }
 }
 
@@ -65,8 +63,7 @@ export async function find(username) {
         debug(`find ${username} RESULT ${util.inspect(res.body)}`);
         return res.body;
     } catch (e) {
-        error(`users FIND ERROR ${e.stack}`);
-        throw e;
+       return null;
     }
 }
 
@@ -82,8 +79,7 @@ export async function userPasswordCheck(username, password) {
             .auth('them', 'D4ED43C0-8BD6-4FE2-B358-7C0E230D11EF');
         return res.body;
     } catch (e) {
-        error(`users userPasswordCheck ERROR ${e.stack}`);
-        throw e;
+        return null;
     }
 }
 
@@ -106,8 +102,7 @@ export async function findOrCreate(profile) {
             .auth('them', 'D4ED43C0-8BD6-4FE2-B358-7C0E230D11EF');
         return res.body;
     } catch (e) {
-        error(`users findOrCreate ERROR ${e.stack}`);
-        throw e;
+        return null;
     }
 }
 
@@ -121,7 +116,6 @@ export async function listUsers() {
             .auth('them', 'D4ED43C0-8BD6-4FE2-B358-7C0E230D11EF');
         return res.body;
     } catch (e) {
-        error(`users listUsers ERROR ${e.stack}`);
-        throw e;
+        return null;
     }
 }

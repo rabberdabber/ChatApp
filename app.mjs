@@ -19,6 +19,7 @@ import { socketio as chatSocketio,router as chats } from './routes/chats';
 import http from 'http';
 import passportSocketIo from 'passport.socketio';
 import session from 'express-session';
+import flash from 'express-flash';
 import sessionFileStore from 'session-file-store';
 const FileStore = sessionFileStore(session);
 export const sessionCookieName = 'chatscookie.sid';
@@ -78,6 +79,7 @@ app.use('/assets/vendor/fontawesome', express.static(
 app.use('/assets/vendor/fileinput', express.static(
     path.join(__dirname, 'node_modules', 'jquery-fileinput')));
 
+
 app.use(session({
     store: new FileStore({ path: "sessions" }),
     secret: 'keyboard mouse',
@@ -87,14 +89,17 @@ app.use(session({
 }));
 initPassport(app);
 
+app.use(flash());
 
 app.use('/', index);
 app.use('/main',index);
+
 app.use('/users', users); 
 app.use('/chats', chats);
 
 indexSocketio(io);
 chatSocketio(io);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -31,9 +31,10 @@ router.get('/main',ensureAuthenticated, async(req, res, next) => {
 
 router.get('/', async (req, res, next) => {
     try {
-        res.render('login');
+        res.render('login',{message: req.flash('message')});
     } catch (e) { next(e); }
 });
+
 
 export function socketio(io) {
     var emitChat = async () => {

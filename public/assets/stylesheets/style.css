@@ -110,3 +110,10 @@ a {
         display: none;
     }
 }
+
+.footer {
+    margin: 0px auto;
+    height: 150px;
+    bottom: 0%;
+    width: 100%;
+}

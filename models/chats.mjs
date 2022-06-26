@@ -19,6 +19,7 @@ export async function create(user) {
 }
 
 export async function read(user) { return (await model()).read(user); }
+
 export async function destroy(user) { 
     (await model()).destroy(user);
     _events.chatDestroy({user});
