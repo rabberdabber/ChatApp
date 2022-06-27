@@ -61,15 +61,15 @@ export async function destroyMessage(id) {
     
 }
 
-export async function recentMessages(namespace) {
+export async function recentMessages(from,to) {
     const {db, client} = await connectDB();
     const collection = db.collection('messages');
 
     const keyz = await new Promise((resolve, reject) => {
         var keyz = [];
         collection.find({ $or: [
-            {to:namespace},
-            {from:namespace}
+            {from:from , to:to},
+            {from:to, to:from}
         ] }).sort({timestamp:-1}).limit(20).forEach(
             msg => {
                 keyz.push({

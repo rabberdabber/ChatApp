@@ -12,19 +12,20 @@ async function model() {
     return ChatsModule;
 }
 
-export async function create(user) { 
-    const chat = (await model()).create(user);
+export async function create(owner,user) { 
+    const chat = (await model()).create(owner,user);
     _events.chatCreated(chat);
     return chat; 
 }
 
-export async function read(user) { return (await model()).read(user); }
+export async function read(owner,user) { return (await model()).read(owner,user); }
 
-export async function destroy(user) { 
-    (await model()).destroy(user);
+export async function destroy(owner,user) { 
+    (await model()).destroy(owner,user);
     _events.chatDestroy({user});
     return user;
 }
+
 export async function keylist() { return (await model()).keylist(); }
-export async function count() { return (await model()).count(); }
+export async function count(user) { return (await model()).count(user); }
 export async function close() { return (await model()).close(); }

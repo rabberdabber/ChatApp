@@ -17,7 +17,18 @@
                 <!--
                 <a class="nav-item nav-link btn btn-dark col-auto" href='/chats/search'>Search User</a>
                 -->
+
             </div>
+            <form action="/chats/search" method="POST">
+                <div class=" col-7 input-group rounded">
+                    <input type="search" class="form-control rounded" name="user" placeholder="Search" aria-label="Search"
+                        aria-describedby="search-addon" />
+                    <span class="input-group-text border-0" id="search-addon">
+                        <i class="fas fa-search"></i>
+                    </span>
+                </div>
+            </form>
+
             {{else}}
             <div class="collapse navbar-collapse" id="navbarLogIn">
                 <span class="navbar-text text-dark col"></span>

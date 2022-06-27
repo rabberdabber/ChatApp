@@ -107,8 +107,8 @@ passport.use(new LocalStrategy(
         try {
             debug(`userPasswordCheck(${username}, ${password})`);
             var check = await usersModel.userPasswordCheck(username, password);
+            
             if(check == null){
-                
                 done(null,false);
                 return;
             }

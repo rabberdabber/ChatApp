@@ -24,7 +24,7 @@
 
 <div class="chat-container">
     <header class="chat-header">
-        <h1><i class="fa-light fa-face-smile"></i> ChatCord</h1>
+        <h1><i class="fa-light fa-face-smile"></i>{{chat.user}}</h1>
     </header>
     
     <main class="chat-main">
@@ -45,11 +45,11 @@
 
     <div class="chat-form-container">
         <form id="submit-message" action="/chats/write-message" method="POST">
-            <input id="msg" type="text" name="message" placeholder="Enter Message" required autocomplete="off" />
+            <textarea id="msg" type="text" name="message" placeholder="Enter Message" required autocomplete="off"></textarea>
             <input type="hidden" name="from" value="{{username.username}}">
             <input type="hidden" name="to" value="{{chat.user}}">
 
-            <button class="btn"><i class="fas fa-paper-plane"></i> Send</button>
+            <button class="btn" style="color: white;"><i class="fas fa-paper-plane"></i> Send</button>
         </form>
     </div>
 </div>
@@ -80,7 +80,7 @@
     $(document).ready(function () {
         console.log('EMIT getchatmessages');
 
-        io('/view').emit('getchatmessages', '{{chat.user}}', function (msgs) {
+        io('/view').emit('getchatmessages', {user:'{{chat.user}}', username:'{{username.username}}'}, function (msgs) {
             console.log("RECEIVE getchatmessages reply " + JSON.stringify(msgs));
 
             $('#chatMessages').empty();
@@ -115,14 +115,16 @@
             const time = new Date(newmsg.timestamp).toLocaleTimeString();
             if (newmsg.from == '{{username.username}}'){
                 return '<div id="chat-message-' + newmsg.id + '" style="background-color:' + color + ';" class="message text-left card">'
-                    + '<p class="meta">' + newmsg.from + " " + '<span>' + time + '</span>' + '</p>'
-                    + '<p class="text">' + newmsg.message + '</p>'
+                    + '<div><i class="fa-solid fa-circle-user fa-lg"></i>'
+                    +'<p class="meta">' + newmsg.from + " " + '<span style="color: black;">' + time + '</span>' + '</p>'
+                    + '<p class="text">' + newmsg.message + '</p></div>'
                     + '</div>';
             }
 
-            return '<div id="chat-message-' + newmsg.id + '" style="background-color:' + color + ';" class="message text-right card">'
-                + '<p class="meta">' + newmsg.from + " " + '<span>' + time + '</span>' +'</p>'
-                + '<p class="text">' + newmsg.message + '</p>' 
+            return '<div id="chat-message-' + newmsg.id + '" style="background-color:' + color + ';" class="message text-right align-right card">'
+                + '<div><i class="fa-solid fa-circle-user fa-lg"></i>'
+                + '<p><span style="color: black;">' + time +  '</span>' + " " + newmsg.from + '</p>'
+                + '<p class="text">' + newmsg.message + '</p></div>' 
                 + '</div>';
         };
 
@@ -133,6 +135,7 @@
                 $('#chatMessages').append(formatMessage(newmsg));
                 $('#chatMessages').show();
                 connectMsgDelButton();
+                $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
             }
         });
 

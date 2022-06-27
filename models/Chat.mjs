@@ -3,7 +3,7 @@ const _owner = Symbol('owner');
 
 
 export default class Chat {
-    constructor(user) {
+    constructor(owner,user) {
         this[_user] = user;
         this[_owner] = owner;
     }

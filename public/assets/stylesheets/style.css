@@ -14,7 +14,7 @@ a {
 
 .chat-container {
     max-width: 1100px;
-    background: #fff;
+    background: black;
     margin: 30px auto;
     overflow: hidden;
 }
@@ -102,6 +102,10 @@ a {
     flex: 1;
 }
 
+.text {
+    font-family: 'Oswald', sans-serif;
+}
+
 @media (max-width: 700px) {
     .chat-main {
         display: block;
@@ -117,3 +121,5 @@ a {
     bottom: 0%;
     width: 100%;
 }
+
+
