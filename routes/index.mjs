@@ -13,7 +13,7 @@ const error = DBG('chats:error-index');
 router.get('/main',ensureAuthenticated, async(req, res, next) => {
     try {
         let chatlist = await chats.keylist();
-        res.render('index', {
+        res.render('chatview', {
             chatlist: chatlist,
             user: req.user ? req.user : undefined
             , message: req.flash('message')
@@ -32,7 +32,7 @@ export function socketio(io) {
     var emitChat = async () => {
         const chatlist = await chats.keylist();
         debug(`socketio emitChat ${util.inspect(chatlist)}`);
-        io.of('/home').emit('chatlists', { chatlist });
+        io.of('/view').emit('chatlists', { chatlist });
     };
     chats.events.on('chatcreated', emitChat);
     chats.events.on('chatupdate', emitChat);

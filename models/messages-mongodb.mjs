@@ -1,4 +1,5 @@
 import mongodb from 'mongodb';
+const ObjectID = mongodb.ObjectID;
 import fs from 'fs-extra';
 import util from 'util';
 import EventEmitter from 'events';
@@ -52,13 +53,12 @@ export async function create(from, namespace, message) {
 export async function destroyMessage(id) {
     const {db, client} = await connectDB();
     const collection = db.collection('messages');
-    (await collection.findOneAndDelete({ id:id}))
-    .catch((error) => {
-       console.log("couldn't destroy the message with id ",id);
-    });
    
-    emitter.emit('destroymessage', {id})
+   
+    var result = await collection.deleteOne({"_id": new ObjectID(id)});
+   
     
+    emitter.emit('destroymessage', {id});
 }
 
 export async function recentMessages(from,to) {
@@ -73,6 +73,7 @@ export async function recentMessages(from,to) {
         ] }).sort({timestamp:-1}).limit(20).forEach(
             msg => {
                 keyz.push({
+                    id: msg._id,
                     from: msg.from,
                     to: msg.to,
                     message: msg.message,

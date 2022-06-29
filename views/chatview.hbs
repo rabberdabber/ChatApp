@@ -1,40 +1,27 @@
-<!--
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-xs-12">
-            {{#if chat}}<p>{{ chat.user }}</p>{{/if}}
-            {{#if chat}}<h2>{{ chat.message }}</h2>{{/if}}
-        </div>
-    </div>
-    {{#if chat }}
-    <div class="row">
-        <div class="col-xs-12">
-            <div class="btn-group">
-                <a class="btn btn-outline-dark" href="/chats/destroy?user={{chat.user}}" role="button">
-                    Unsend
-                </a>
-               
-            </div>
-        </div>
-    </div>
-    {{/if}}
-</div>
--->
-
 
 <div class="chat-container">
     <header class="chat-header">
-        <h1><i class="fa-light fa-face-smile"></i>{{chat.user}}</h1>
+        {{#if peer }}
+            <h1>{{peer}}</h1> 
+        {{ else }}
+            <h1> Users </h1>
+        {{/if}}
+        
     </header>
     
     <main class="chat-main">
         <div class="chat-sidebar">
-            <!--
-            <h3><i class="fas fa-users"></i> Users</h3>
-            <ul id="users">
-                <li> Baba</li>
-            </ul>
-            -->
+            <div class="container-fluid">
+                <div class="row">
+                    <div id="chatlists" class="col-12 btn-group-vertical" role="group">
+                        {{#each chatlist}}
+                        <a class="btn btn-lg btn-block btn-outline-light" href="/chats/view?user={{ this }}">
+                            {{ this }}
+                        </a>
+                        {{/each}}
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div id="chatMessages" class="chat-messages">
@@ -43,44 +30,54 @@
 
     </main>
 
+    {{#if peer }}
     <div class="chat-form-container">
         <form id="submit-message" action="/chats/write-message" method="POST">
-            <textarea id="msg" type="text" name="message" placeholder="Enter Message" required autocomplete="off"></textarea>
-            <input type="hidden" name="from" value="{{username.username}}">
-            <input type="hidden" name="to" value="{{chat.user}}">
+            <textarea  id="msg" type="text" name="message" placeholder="Enter Message" autocomplete="off"></textarea>
+            <input type="hidden" name="from" value="{{user.username}}">
+            <input type="hidden" name="to" value="{{peer}}">
 
-            <button class="btn" style="color: white;"><i class="fas fa-paper-plane"></i> Send</button>
+            <button class="btn message-btn" style="color: white;"><i class="fas fa-paper-plane"></i> Send</button>
         </form>
     </div>
+    {{/if}}
 </div>
 
-<!--
-<div class="file-loading">
-    <input id="input-ficons-1" name="input-ficons-1[]" multiple type="file">
-</div>
--->
 
-<script src="/assets/javascripts/script.js"> </script>
 
 {{> footerjs }}
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
+    $("#chatlists").on("click", "a", function (e) {
+        $(this).css({ "backgroundColor": "white" });
+        $(this).css({ "color": "black" });
+        var url = $(this).attr('href');;
+        $(location).attr('href', url);
+        e.preventDefault();
+     });
+
     $(document).ready(function () {
-        io('/view').on('chatdestroy', function (data) {
-            if (data.user === "{{ chat.user }}") {
-                window.location.href = "/";
+        console.log("got updated chatlist");
+        var socket = io('/view');
+        socket.on('chatlists', function (data) {
+            var chatlist = data.chatlist;
+            $('#chatlists').empty();
+            for (var i = 0; i < chatlist.length; i++) {
+                chatdata = chatlist[i];
+                $('#chatlists')
+                    .append('<a class="btn btn-lg btn-block btn-outline-light"  href = "/chats/view?user=' + chatdata + '">' + chatdata + '</a>');
             }
         });
-    });
+    }); 
 </script>
 
-
+{{#if peer }}
 <script>
     $(document).ready(function () {
         console.log('EMIT getchatmessages');
 
-        io('/view').emit('getchatmessages', {user:'{{chat.user}}', username:'{{username.username}}'}, function (msgs) {
+        io('/view').emit('getchatmessages', {user:'{{peer}}', username:'{{user.username}}'}, function (msgs) {
             console.log("RECEIVE getchatmessages reply " + JSON.stringify(msgs));
 
             $('#chatMessages').empty();
@@ -94,44 +91,44 @@
         });
 
         var connectMsgDelButton = function () {
-           /*
             $('.message-del-button').on('click', function (event) {
                 $.post('/chats/del-message', {
-                    id: $(this).data("id"),
-                    namespace: $(this).data("namespace")
+                    id: $(this).data("id")
                 },
                     function (response) { });
                 event.preventDefault();
             });
-            */
         };
 
         var formatMessage = function (newmsg) {
             var color = '#1E90FF';
 
-            if(newmsg.to == '{{chat.user}}') {
+            if(newmsg.to == '{{peer}}') {
                 color = '#DCDCDC';
             }
             const time = new Date(newmsg.timestamp).toLocaleTimeString();
-            if (newmsg.from == '{{username.username}}'){
+            if (newmsg.from == '{{user.username}}'){
+
                 return '<div id="chat-message-' + newmsg.id + '" style="background-color:' + color + ';" class="message text-left card">'
                     + '<div><i class="fa-solid fa-circle-user fa-lg"></i>'
                     +'<p class="meta">' + newmsg.from + " " + '<span style="color: black;">' + time + '</span>' + '</p>'
-                    + '<p class="text">' + newmsg.message + '</p></div>'
-                    + '</div>';
+                    + newmsg.message + '</div>'
+                    + '<div class="offset-11 col-1"> <button type="button" class="btn btn-danger message-del-button" data-id="'
+                    + newmsg.id + '">' + '&cross; </button></div>' + '</div>';
             }
 
             return '<div id="chat-message-' + newmsg.id + '" style="background-color:' + color + ';" class="message text-right align-right card">'
                 + '<div><i class="fa-solid fa-circle-user fa-lg"></i>'
                 + '<p><span style="color: black;">' + time +  '</span>' + " " + newmsg.from + '</p>'
-                + '<p class="text">' + newmsg.message + '</p></div>' 
-                + '</div>';
+                + newmsg.message + '</div>' 
+                + '<div class="col-1"><button type="button" class="btn btn-danger message-del-button" data-id="'
+                + newmsg.id + '">' + '&cross; </button></div>' + '</div>';
         };
 
         io('/view').on('newmessage', function (newmsg) {
-            console.log('/view-{{chat.user}} received newmessage ' + JSON.stringify(newmsg));
-            console.log('{{username.username}}');
-            if (newmsg.to === '{{username.username}}' || newmsg.from === '{{username.username}}') {
+            console.log('{{peer}} received newmessage ' + JSON.stringify(newmsg));
+            console.log('{{user.username}}');
+            if (newmsg.to === '{{user.username}}' || newmsg.from === '{{user.username}}') {
                 $('#chatMessages').append(formatMessage(newmsg));
                 $('#chatMessages').show();
                 connectMsgDelButton();
@@ -140,10 +137,9 @@
         });
 
         io('/view').on('destroymessage', function (data) {
-            console.log('/view-{{chat.user}} received destroymessage ' + JSON.stringify(data));
-            if (data.to === '/view-{{chat.user}}') {
-                $('#chatMessages #chat-message-' + data.id).remove();
-            }
+            console.log('{{peer}} received destroymessage ' + JSON.stringify(data));
+            $('#chatMessages #chat-message-' + data.id).remove();
+    
         });
 
         $('form#submit-message').submit(function (event) {
@@ -154,6 +150,9 @@
             }
 
             var $form = $('form#submit-message');
+            tinyMCE.activeEditor.dom.addClass(tinyMCE.activeEditor.dom.select('p'), 'text');
+            tinyMCE.triggerSave();
+
           
             var request = $.ajax({
                 type: $form.attr('method'),
@@ -172,4 +171,4 @@
 
     }); 
 </script>
-
+{{/if}}

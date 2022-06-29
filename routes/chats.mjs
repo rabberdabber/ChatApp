@@ -13,53 +13,12 @@ import DBG from 'debug';
 const debug = DBG('chats:router-users');
 const error = DBG('chats:error-chats'); 
 
-// Add Chats. (create)
-router.get('/add', ensureAuthenticated,(req, res, next) => {
-    
-    res.render('chatedit', {
-        title: "Add a Chat",
-        docreate: true,
-        user: req.user, chat: undefined
-    });
-});
-
-// Save Chat (update)
-router.post('/save',ensureAuthenticated, async(req, res, next) => {
-    try {
-        console.log(req.body.user);
-        var user = await usersModel.find(req.body.user);
-
-        if (user == null) {
-            req.flash('message', 'No such user found!');
-            res.redirect('/main');
-            return;
-        }
-        var chat = await chats.read(req.user,req.body.user);
-        if(chat != null){
-            req.flash('message','Chat already exists!');
-            res.redirect('/main');
-            return;
-        }
-        
-
-        var chat;
-        if (req.body.docreate === "create") {
-            chat = await chats.create(req.user,req.body.user);
-        } else {
-            chat = await chats.update(req.user,req.body.user);
-        }
-        res.redirect('/chats/view?user=' + req.body.user);
-    } catch (e) {
-        error(`/save ERROR ${e.stack}`);
-        next(e);
-    }
-});
 
 router.post('/search',ensureAuthenticated, async(req, res, next) => {
     try{
-        var user = req.body.user;
-        var chat = await chats.read(req.user,user);
-        if(chat){
+        var user = await usersModel.find(req.body.user);
+        console.log(user);
+        if(user){
             res.redirect('/chats/view?user=' + req.body.user);
         }
         else{
@@ -68,46 +27,30 @@ router.post('/search',ensureAuthenticated, async(req, res, next) => {
         }
     } catch(e){
         req.flash('message',"No such User found!");
-        next(e);    res.redirect('/main');
+        next(e);    
+        res.redirect('/main');
     }
 });
 
+
 // Read Chat (read)
 router.get('/view', async(req, res, next) => {
-    var chat = await chats.read(req.user,req.query.user);
+    let chatlist = await chats.keylist();
     res.render('chatview', {
-        user: req.query.user ,
-        username: req.user ? req.user: undefined,
-        chat: chat
+        peer: req.query.user ,
+        user: req.user ? req.user: undefined,
+        chatlist: chatlist
     });
 });
 
-
-// Ask to Delete Chat (destroy)
-router.get('/destroy', ensureAuthenticated, async(req, res, next) => {
-    var chat = await chats.read(req.user,req.query.user);
-    res.render('chatdestroy', {
-        user: req.query.user,
-        username: req.user ? req.user : undefined, 
-        chat: chat
-    });
-});
-
-// Really destroy chat (destroy)
-router.post('/destroy/confirm', ensureAuthenticated, async(req, res, next) => {
-    await chats.destroy(req.user,req.body.user);
-    res.redirect('/');
-});
 
 // Save incoming message to message pool, then broadcast it 
 router.post('/write-message', ensureAuthenticated, async (req, res, next) => {
     try {
-        await messages.create(req.body.from,
-            req.body.to, req.body.message);
-
-        var chat = await chats.read(req.body.to,req.body.from);
-        if(chat == null){
-            await chats.create(req.body.to,req.body.from);
+        console.log(req.body.message);
+        if(req.body.message != ""){
+            await messages.create(req.body.from,
+                req.body.to, req.body.message);
         }
         res.status(200).json({});
     } catch (err) {
@@ -118,7 +61,8 @@ router.post('/write-message', ensureAuthenticated, async (req, res, next) => {
 // Delete the indicated message 
 router.post('/del-message', ensureAuthenticated, async (req, res, next) => {
     try {
-        await messages.destroyMessage(req.user,req.body.to);
+        console.log(req.body.id);
+        await messages.destroyMessage(req.body.id);
         res.status(200).json({});
     } catch (err) {
         res.status(500).end(err.stack);
