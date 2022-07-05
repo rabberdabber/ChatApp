@@ -1,0 +1,65 @@
+version: '3'
+services:
+
+  db-userauth:
+    image: "mysql/mysql-server:5.7"
+    container_name: db-userauth
+    command: [ "mysqld", "--character-set-server=utf8mb4", 
+              "--collation-server=utf8mb4_unicode_ci",
+              "--bind-address=0.0.0.0" ]
+    expose:
+      - "3306"
+    networks:
+      - authnet
+    volumes:
+      - db-userauth-data:/var/lib/mysql
+      - ../authnet/my.cnf:/etc/my.cnf
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "true"
+      MYSQL_USER: userauth
+      MYSQL_PASSWORD: userauth
+      MYSQL_DATABASE: userauth
+    restart: always
+
+  userauth:
+    build: ../users
+    container_name: userauth
+    depends_on:
+      - db-userauth
+    networks:
+      - authnet
+      - frontnet
+    restart: always
+
+  mongochat:
+    image: "mongo"
+    container_name: mongochat
+    expose:
+      - "27017"
+    networks:
+      - frontnet
+    volumes:
+      - db-chats-data:/var/lib/mongo
+    restart: always
+
+  chats:
+    build: ../chatapp
+    container_name: chats
+    restart: always
+    depends_on:
+      - mongochat
+    networks:
+      - frontnet
+    ports:
+      - "3000:3000"
+
+
+networks:
+  frontnet:
+    driver: bridge
+  authnet:
+    driver: bridge
+
+volumes: 
+  db-userauth-data: 
+  db-chats-data:
