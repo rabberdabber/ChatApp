@@ -24,7 +24,11 @@ import sessionFileStore from 'session-file-store';
 const FileStore = sessionFileStore(session);
 export const sessionCookieName = 'chatscookie.sid';
 const sessionSecret = 'rabberdabber';
-const sessionStore = new FileStore({ path: "sessions"});
+
+const sessionStore = new FileStore({
+    path: process.env.NOTES_SESSIONS_DIR ?
+        process.env.NOTES_SESSIONS_DIR : "sessions"
+}); 
 
 // Workaround for lack of __dirname in ES6 modules
 import dirname from './dirname.js';
@@ -47,7 +51,10 @@ io.use(passportSocketIo.authorize({
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port',port);
 
-server.listen(port);
+const hostname = '0.0.0.0';
+server.listen(port, hostname, () => {
+    console.log(`Server running at http://${hostname}:${port}/`);
+});
 server.on('error',onError);
 server.on('listening',onListening);
 // view engine setup

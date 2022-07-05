@@ -9,19 +9,12 @@
         
     </header>
     
+
+
+    {{#if peer }}
     <main class="chat-main">
-        <div class="chat-sidebar">
-            <div class="container-fluid">
-                <div class="row">
-                    <div id="chatlists" class="col-12 btn-group-vertical" role="group">
-                        {{#each chatlist}}
-                        <a class="btn btn-lg btn-block btn-outline-light" href="/chats/view?user={{ this }}">
-                            {{ this }}
-                        </a>
-                        {{/each}}
-                    </div>
-                </div>
-            </div>
+        <div id="chatlists" class="chat-sidebar">
+            
         </div>
 
         <div id="chatMessages" class="chat-messages">
@@ -30,16 +23,21 @@
 
     </main>
 
-    {{#if peer }}
-    <div class="chat-form-container">
+    <div class="offset-sm-5 chat-form-container">
         <form id="submit-message" action="/chats/write-message" method="POST">
-            <textarea  id="msg" type="text" name="message" placeholder="Enter Message" autocomplete="off"></textarea>
+            <textarea id="msg" type="text" name="message" placeholder="Enter Message" autocomplete="off"></textarea>
             <input type="hidden" name="from" value="{{user.username}}">
             <input type="hidden" name="to" value="{{peer}}">
 
-            <button class="btn message-btn" style="color: white;"><i class="fas fa-paper-plane"></i> Send</button>
+            <button id="sendbtn" class="btn message-btn" onclick="clear()" style="color: white;"><i class="fas fa-paper-plane"></i> Send</button>
         </form>
     </div>
+    {{ else }}
+        <main>
+            <div id="chatlists">
+        
+            </div>
+        </main>
     {{/if}}
 </div>
 
@@ -49,25 +47,31 @@
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-    $("#chatlists").on("click", "a", function (e) {
-        $(this).css({ "backgroundColor": "white" });
-        $(this).css({ "color": "black" });
-        var url = $(this).attr('href');;
-        $(location).attr('href', url);
-        e.preventDefault();
-     });
 
     $(document).ready(function () {
-        console.log("got updated chatlist");
         var socket = io('/view');
+        var listUsers = function(chatlist) {
+            for (var i = 0; i < chatlist.length; i++) {
+                chatdata = chatlist[i];
+
+                if (chatdata == '{{peer}}') {
+                    $('#chatlists')
+                        .append('<a class="btn btn-lg btn-block btn-outline-dark" data-user=' + chatdata + ' href = "/chats/view?user=' + chatdata + '">' + chatdata + '</a>');
+                }
+                else {
+                    $('#chatlists')
+                        .append('<a class="btn btn-lg btn-block btn-outline-light" data-user=' + chatdata + ' href = "/chats/view?user=' + chatdata + '">' + chatdata + '</a>');
+                }
+            }
+        }
+        var chatlist = '{{chatlist}}'.split(',');
+
+        listUsers(chatlist);
         socket.on('chatlists', function (data) {
             var chatlist = data.chatlist;
             $('#chatlists').empty();
-            for (var i = 0; i < chatlist.length; i++) {
-                chatdata = chatlist[i];
-                $('#chatlists')
-                    .append('<a class="btn btn-lg btn-block btn-outline-light"  href = "/chats/view?user=' + chatdata + '">' + chatdata + '</a>');
-            }
+            listUsers(chatlist);
+            changeColor();
         });
     }); 
 </script>
@@ -103,32 +107,29 @@
         var formatMessage = function (newmsg) {
             var color = '#1E90FF';
 
-            if(newmsg.to == '{{peer}}') {
-                color = '#DCDCDC';
-            }
             const time = new Date(newmsg.timestamp).toLocaleTimeString();
-            if (newmsg.from == '{{user.username}}'){
-
-                return '<div id="chat-message-' + newmsg.id + '" style="background-color:' + color + ';" class="message text-left card">'
+            if (newmsg.from == '{{peer}}'){
+                color = '#DCDCDC';
+                return '<div id="chat-message-' + newmsg.id + '" style="background-color:' + color + ';" class="message col-6 card">'
                     + '<div><i class="fa-solid fa-circle-user fa-lg"></i>'
-                    +'<p class="meta">' + newmsg.from + " " + '<span style="color: black;">' + time + '</span>' + '</p>'
+                    + '<p class="meta">' + newmsg.from + " " + '<span style="color: black;">' + time + '</span>' + '</p>'
                     + newmsg.message + '</div>'
                     + '<div class="offset-11 col-1"> <button type="button" class="btn btn-danger message-del-button" data-id="'
                     + newmsg.id + '">' + '&cross; </button></div>' + '</div>';
             }
 
-            return '<div id="chat-message-' + newmsg.id + '" style="background-color:' + color + ';" class="message text-right align-right card">'
+            return '<div id="chat-message-' + newmsg.id + '" style="background-color:' + color + ';" class="message offset-6 card">'
                 + '<div><i class="fa-solid fa-circle-user fa-lg"></i>'
-                + '<p><span style="color: black;">' + time +  '</span>' + " " + newmsg.from + '</p>'
-                + newmsg.message + '</div>' 
-                + '<div class="col-1"><button type="button" class="btn btn-danger message-del-button" data-id="'
+                + '<p class="meta">' + newmsg.from + '<span>' + " " + time + '</span>' + '</p>'
+                + newmsg.message + '</div>'
+                + '<div class="offset-11 col-1"><button type="button" class="btn btn-danger message-del-button" data-id="'
                 + newmsg.id + '">' + '&cross; </button></div>' + '</div>';
         };
 
         io('/view').on('newmessage', function (newmsg) {
             console.log('{{peer}} received newmessage ' + JSON.stringify(newmsg));
             console.log('{{user.username}}');
-            if (newmsg.to === '{{user.username}}' || newmsg.from === '{{user.username}}') {
+            if (newmsg.from === '{{user.username}}'|| '{{peer}}' == newmsg.from ) {
                 $('#chatMessages').append(formatMessage(newmsg));
                 $('#chatMessages').show();
                 connectMsgDelButton();
@@ -165,7 +166,7 @@
             request.fail(function (jqXHR, textStatus, errorThrown) {
                 alert("ERROR " + jqXHR.responseText);
             });
-
+            tinymce.activeEditor.setContent('<p></p>');
             event.preventDefault();
         });
 

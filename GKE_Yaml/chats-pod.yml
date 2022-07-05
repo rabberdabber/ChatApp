@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: chats
+  labels:
+    name: chats
+    app: chatting-app
+spec:
+  containers:
+  - name: chats
+    image: 20170844/chats:latest
+    ports:
+     - containerPort: 3000

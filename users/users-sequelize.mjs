@@ -10,7 +10,7 @@ var SQUser;
 var sequlz;
 
 async function connectDB() {
-
+    try {
     if (SQUser) return SQUser.sync();
 
     const yamltext = await fs.readFile(process.env.SEQUELIZE_CONNECT, 'utf8');
@@ -37,9 +37,13 @@ async function connectDB() {
         photos: Sequelize.STRING(2048)
     });
     return SQUser.sync();
+} catch (err) {
+    console.log(err);
+}
 }
 
 export async function create(username, password, provider, familyName, givenName, middleName, emails, photos) {
+    try {
     const SQUser = await connectDB();
     return SQUser.create({
         username: username,
@@ -51,9 +55,13 @@ export async function create(username, password, provider, familyName, givenName
         emails: JSON.stringify(emails),
         photos: JSON.stringify(photos)
     });
+} catch (err) {
+    console.log(err);
+}
 }
 
 export async function update(username, password, provider, familyName, givenName, middleName, emails, photos) {
+    try {
     const user = await find(username);
     return user ? user.updateAttributes({
         password: password,
@@ -64,25 +72,37 @@ export async function update(username, password, provider, familyName, givenName
         emails: JSON.stringify(emails),
         photos: JSON.stringify(photos)
     }) : undefined;
+} catch (err) {
+    console.log(err);
+}
 }
 
 export async function destroy(username) {
+    try {
     const SQUser = await connectDB();
     const user = await SQUser.findOne({ where: { username: username } });
     if (!user) throw new Error('Did not find requested ' + username + ' to delete');
     user.destroy();
+    } catch (err) {
+        console.log(err);
+    }
 }
 
 export async function find(username) {
+    try {
     log('find  ' + username);
     const SQUser = await connectDB();
     const user = await SQUser.findOne({ where: { username: username } });
     const ret = user ? sanitizedUser(user) : undefined;
     // log(`find returning ${util.inspect(ret)}`);
     return ret;
+    } catch (err) {
+        console.log(err);
+    }
 }
 
 export async function userPasswordCheck(username, password) {
+    try {
     const SQUser = await connectDB();
     const user = await SQUser.findOne({ where: { username: username } });
     log('userPasswordCheck query= ' + username + ' ' + password + ' user= ' + user.username + ' ' + user.password);
@@ -93,20 +113,31 @@ export async function userPasswordCheck(username, password) {
     } else {
         return { check: false, username: username, message: "Incorrect password" };
     }
+} catch (e) {
+    console.log(e);
+}
 }
 
 export async function findOrCreate(profile) {
+    try {
     const user = await find(profile.id);
     if (user) return user;
     return await create(profile.id, profile.password, profile.provider,
         profile.familyName, profile.givenName, profile.middleName,
         profile.emails, profile.photos);
+    } catch (err) {
+        console.log(err);
+    }
 }
 
 export async function listUsers() {
+    try{
     const SQUser = await connectDB();
     const userlist = await SQUser.findAll({});
     return userlist.map(user => sanitizedUser(user));
+    } catch (err) { 
+        console.log(err);
+    }
 }
 
 export function sanitizedUser(user) {

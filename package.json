@@ -9,7 +9,9 @@
         "start-sequelize": "MONGO_URL=mongodb://localhost/ MONGO_DBNAME=rabb CHATS_MODEL=mongodb USER_SERVICE_URL=http://localhost:3333 node --experimental-modules ./bin/www.mjs",
         "dl-minty": "mkdir -p minty && npm run dl-minty-css && npm run dl-minty-min-css",
         "dl-minty-css": "wget https://bootswatch.com/4/minty/bootstrap.css -O minty/bootstrap.css",
-        "dl-minty-min-css": "wget https://bootswatch.com/4/minty/bootstrap.min.css -O minty/bootstrap.min.css"
+        "dl-minty-min-css": "wget https://bootswatch.com/4/minty/bootstrap.min.css -O minty/bootstrap.min.css",
+        "docker": "node --experimental-modules ./app",
+        "docker-build": "docker build -t node-web-development/chats ."
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^6.1.1",

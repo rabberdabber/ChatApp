@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: userauth-service
+  labels:
+    name: userauth-service
+    app: chatting-app
+spec:
+  ports:
+  - port: 3333
+    targetPort: 3333
+  selector:
+     name: userauth
+     app: chatting-app

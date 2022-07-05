@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: db-userauth
+  labels:
+    name: db-userauth
+    app: chatting-app
+spec:
+  containers:
+    - args:
+        - mysqld
+        - --character-set-server=utf8mb4
+        - --collation-server=utf8mb4_unicode_ci
+        - --bind-address=0.0.0.0
+        - --ignore-db-dir=lost+found
+      env:
+        - name: MYSQL_DATABASE
+          value: userauth
+        - name: MYSQL_PASSWORD
+          value: userauth
+        - name: MYSQL_RANDOM_ROOT_PASSWORD
+          value: "true"
+        - name: MYSQL_USER
+          value: userauth
+      image: mysql/mysql-server:5.7
+      name: db-userauth
+      ports:
+        - containerPort: 3306
+      resources: {}
+      volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: db-userauth-data
+  restartPolicy: Always
+  volumes:
+    - name: db-userauth-data
+      persistentVolumeClaim:
+        claimName: db-userauth-data

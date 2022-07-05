@@ -17,7 +17,7 @@ export const emitter = new MessagesEmitter();
 var client;
 
 async function connectDB() {
-    if (!client) client = await MongoClient.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true }).catch((error) => {
+    if (!client) client = await MongoClient.connect(process.env.MONGODB_CONNSTRING, { useNewUrlParser: true, useUnifiedTopology: true }).catch((error) => {
         console.log("couldn't connect to mongodb");
         process.exit(2);
     });
