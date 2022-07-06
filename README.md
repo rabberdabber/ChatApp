@@ -1,5 +1,5 @@
 # ChatApp
-Welcome to ChatApp, a chat application implemented using Node.js, Express.js, and Socket.io and employs a microservice architecture.
+Welcome to ChatApp, a chat application implemented using Node.js, Express.js, and Socket.io and employs Restful interface and a microservice architecture.
 
 ## Used Languages,Frameworks,Databases and technologies
 ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
