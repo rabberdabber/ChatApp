@@ -1,7 +1,7 @@
 # ChatApp
 Welcome to ChatApp, a chat application implemented using Node.js, Express.js, and Socket.io and employs a microservice architecture.
 
-## DEMO
+## Demo
 ![DemoGIF](./chatapp.gif)
 
 ## Application Links
