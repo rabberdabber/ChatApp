@@ -15,7 +15,7 @@ Welcome to ChatApp, a chat application implemented using Node.js, Express.js, an
 - The chat messaging service that employs node.js and express.js to create neat APIs, and socket.io library for dynamic client/server interaction.
 - The second is a user authentication and management service that employs Restify to implement REST interface and a data model using Sequelize to communicate with a database to add users and stores user information such as username, password, in the database. the users directory corresponds to this service.
 - The third and fourth services are a mysql database to store user information and a mongodb database to store chat messages. The data models of the databases are in models directory, named Chat and Message modules.
-- Finally, I deployed ChatApp using Google Kubernetes Engine(GKE) with 4 pods running corresponding to the 4 microservices. I containerized the 4 microservices using docker and uses those containers to create the pods. The yaml files for the containers are in the GKE_Yaml directory.
+- Finally, I deployed ChatApp using Google Kubernetes Engine(GKE) with 4 pods running corresponding to the 4 microservices. I containerized the 4 microservices using docker and uses those containers to create the pods. The yaml files for the containers are in the GKE_Yaml directory. Below are the screenshots of the running pods in the GKE and also cluster services.
 
 ![Screen Shot 2022-07-06 at 3 16 15 PM](https://user-images.githubusercontent.com/60803336/177481948-d4cdd39d-e12c-42b3-a20a-e4579297fb35.png)
 
