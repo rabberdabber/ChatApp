@@ -17,7 +17,7 @@ Welcome to ChatApp, a chat application implemented using Node.js, Express.js, an
 
 ## Application Links
 
-- [Link to ChatApp](148.236.64.34.bc.googleusercontent.com:3000) 
+- [Link to ChatApp](http://148.236.64.34.bc.googleusercontent.com:3000) 
 - [Demo Video On Youtube](https://www.youtube.com/watch?v=5frHxp0aO3Q&ab_channel=bereketsiyum)
 
 ## Description
