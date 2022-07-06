@@ -17,6 +17,10 @@ Welcome to ChatApp, a chat application implemented using Node.js, Express.js, an
 - The third and fourth services are a mysql database to store user information and a mongodb database to store chat messages. The data models of the databases are in models directory, named Chat and Message modules.
 - Finally, I deployed ChatApp using Google Kubernetes Engine(GKE) with 4 pods running corresponding to the 4 microservices. I containerized the 4 microservices using docker and uses those containers to create the pods. The yaml files for the containers are in the GKE_Yaml directory.
 
+![Screen Shot 2022-07-06 at 3 16 15 PM](https://user-images.githubusercontent.com/60803336/177481948-d4cdd39d-e12c-42b3-a20a-e4579297fb35.png)
+
+![Screen Shot 2022-07-06 at 3 16 42 PM](https://user-images.githubusercontent.com/60803336/177482006-9f06b4a9-1e5b-4f94-88b1-b99961c637cd.png)
+
 ## Authors
 
 + Bereket Assefa
